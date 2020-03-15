@@ -7,7 +7,7 @@ def get_body(msg):
     if msg.is_multipart():
         return get_body(msg.get_payload(0))
     else:
-        return msg.get_payload(None, True)
+        return (msg.get_payload(None, True)).decode('KOI8-R', errors='ignore')
 
 
 def search(key, value, con):
@@ -23,9 +23,6 @@ def get_emails(result_bytes):
     return msgs
 
 
-# def get_decoded_message(message):
-
-
 con = imaplib.IMAP4_SSL(credentials.imap_url)
 con.login(credentials.user, credentials.password)
 con.select('INBOX')
@@ -33,6 +30,7 @@ con.select('INBOX')
 result, data = con.fetch(b'1', '(RFC822)')
 rav = email.message_from_bytes(data[0][1])
 
-# decoded_message = quopri.decodestring(get_body(rav)).decode('KOI8-R', errors="ignore")
-print(get_body(rav).decode('KOI8-R', errors="ignore"))
+
+print(get_body(rav))
+
 
