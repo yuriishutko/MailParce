@@ -44,11 +44,7 @@ def do_echo(update: Update, context: CallbackContext):
 
 
 def get_new_message(update: Update, context: CallbackContext):
-    # con.select('INBOX')
-    # result, data = con.fetch(b'1', '(RFC822)')
-    # rav = email.message_from_bytes(data[0][1])
-    # message = gmail_get.get_body(rav)
-    msgs_arr = gmail_get.get_bodies()
+    msgs_arr = gmail_get.get_bodies_of_messages()
     for msg in msgs_arr:
         context.bot.send_message(chat_id=update.message.chat_id, text=msg)
 
