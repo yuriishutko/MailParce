@@ -35,7 +35,7 @@ def get_bodies_of_messages():
     array_of_filtered_messages = []
     connection = open_session(credentials.imap_url, credentials.user, credentials.password)
     connection.select('INBOX')
-    messages = get_emails_from_mailbox(search_by_keys('FROM', 'Y.Shutko@creatio.com', connection), connection)
+    messages = get_emails_from_mailbox(search_by_keys('FROM', credentials.from_email, connection), connection)
     for message in messages:
         array_of_filtered_messages.append(get_body_of_the_message(email.message_from_bytes(message[0][1])))
     return array_of_filtered_messages
