@@ -6,7 +6,7 @@ from telegram.ext import CallbackContext
 from telegram.ext import Filters
 from config.config import TELEGRAM_TOKEN, API_PRIVAT
 from datetime import datetime
-import gmail_get
+import mail_parce
 import requests
 
 
@@ -44,9 +44,10 @@ def do_echo(update: Update, context: CallbackContext):
 
 
 def get_new_message(update: Update, context: CallbackContext):
-    msgs_arr = gmail_get.get_bodies_of_messages()
-    for msg in msgs_arr:
-        context.bot.send_message(chat_id=update.message.chat_id, text=msg)
+    arr = mail_parce.get_array_of_data()
+    for el in arr:
+        print(el)
+    context.bot.send_message(chat_id=update.message.chat_id, text="OK")
 
 
 def get_current_time(update: Update, context: CallbackContext):
