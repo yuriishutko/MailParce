@@ -9,13 +9,11 @@ from datetime import datetime
 import mail_parce
 import mysql_database
 import requests
-import json
 
 
-keyboard = [['\ud83d\udd51', '\ud83d\udcb0', '\ud83d\udc31'],
+keyboard = [['\ud83d\udd51', '/update_database', '\ud83d\udc31'],
             ['/time', '/exchange', '/start'],
             ['/new_employees']]
-
 
 RKM = ReplyKeyboardMarkup(
     keyboard=keyboard,
@@ -45,17 +43,28 @@ def do_echo(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.message.chat_id, text=text, reply_markup=RKM)
 
 
+def update_database(update: Update, context: CallbackContext):
+    """Функция получает непросмотренные сообщения из ящика и заносит данные в базу данных"""
+    count = 0
+    arr = mail_parce.get_array_of_data()
+    if arr:
+        for el in arr:
+            count += 1
+            print(el, count)
+            mysql_database.insert_new_data_to_table(el['date'], el['name'], el['department'], el['role'], el['manager'])
+            context.bot.send_message(chat_id=update.message.chat_id,
+                                     text='Added ' + str(count) + ' ' + 'new positions')
+    else:
+        context.bot.send_message(chat_id=update.message.chat_id, text='There are no new messages')
+
+
 def get_new_message(update: Update, context: CallbackContext):
-    # arr = mail_parce.get_array_of_data()
-    # for el in arr:
-    #     new_date = '.'.join(el['date'].split('.')[::-1])
-        # print(new_date)
-        # mysql_database.insert_new_data_to_table(new_date, el['name'], el['department'], el['role'], el['manager'])
-        # mysql_database.insert_new_data_to_table('17.02.2020', 'Test', 'Test', 'Test', 'Test')
-        # print(new_date, el['name'], el['department'], el['role'], el['manager'])
+    arr = mail_parce.get_array_of_data()
+    if arr:
+        for el in arr:
+            print(el)
 
     data = mysql_database.get_data_from_table()
-    # date = mysql_database.get_data()
 
     for el in data:
         date = datetime.strftime(el[0], '%d-%m-%Y')
@@ -94,6 +103,7 @@ def main():
     start_handler = CommandHandler('start', do_start)
     stop_handler = CommandHandler('stop', do_stop)
     get_new_message_handler = CommandHandler('new_employees', get_new_message)
+    update_database_handler = CommandHandler('update_database', update_database)
     exchange_handler = CommandHandler('exchange', print_exchange)
     time_handler = CommandHandler('time', get_current_time)
     unknown_handler = MessageHandler(Filters.command, unknown)
@@ -106,6 +116,7 @@ def main():
     updater.dispatcher.add_handler(message_handler)
     updater.dispatcher.add_handler(stop_handler)
     updater.dispatcher.add_handler(get_new_message_handler)
+    updater.dispatcher.add_handler(update_database_handler)
     updater.dispatcher.add_handler(exchange_handler)
     updater.dispatcher.add_handler(time_handler)
     updater.dispatcher.add_handler(unknown_handler)
