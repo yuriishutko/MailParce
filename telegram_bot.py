@@ -7,7 +7,9 @@ from telegram.ext import Filters
 from config.config import TELEGRAM_TOKEN, API_PRIVAT
 from datetime import datetime
 import mail_parce
+import mysql_database
 import requests
+import json
 
 
 keyboard = [['\ud83d\udd51', '\ud83d\udcb0', '\ud83d\udc31'],
@@ -44,10 +46,20 @@ def do_echo(update: Update, context: CallbackContext):
 
 
 def get_new_message(update: Update, context: CallbackContext):
-    arr = mail_parce.get_array_of_data()
-    for el in arr:
-        print(el)
-    context.bot.send_message(chat_id=update.message.chat_id, text="OK")
+    # arr = mail_parce.get_array_of_data()
+    # for el in arr:
+    #     new_date = '.'.join(el['date'].split('.')[::-1])
+        # print(new_date)
+        # mysql_database.insert_new_data_to_table(new_date, el['name'], el['department'], el['role'], el['manager'])
+        # mysql_database.insert_new_data_to_table('17.02.2020', 'Test', 'Test', 'Test', 'Test')
+        # print(new_date, el['name'], el['department'], el['role'], el['manager'])
+
+    data = mysql_database.get_data_from_table()
+    # date = mysql_database.get_data()
+
+    for el in data:
+        date = datetime.strftime(el[0], '%d-%m-%Y')
+        context.bot.send_message(chat_id=update.message.chat_id, text=date + '\n' + '\n'.join(el[1:]))
 
 
 def get_current_time(update: Update, context: CallbackContext):
