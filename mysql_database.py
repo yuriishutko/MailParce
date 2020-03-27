@@ -18,8 +18,17 @@ def insert_new_data_to_table(date, name, department, role, manager):
 
 
 def get_data_from_table():
-    sql_query = 'SELECT date, name, department, role, manager FROM new_employees ORDER BY date;'
+    sql_query = 'SELECT DISTINCT date, name, department, role, manager FROM new_employees ORDER BY date;'
     cursor.execute(sql_query)
     result = cursor.fetchall()
+    return result
+
+
+def get_date_of_new_employees(date_now):
+    sql_query = 'SELECT DISTINCT date, name, department, role, manager FROM new_employees ' \
+                'WHERE date>=("{}") ORDER BY date;'.format(date_now)
+    cursor.execute(sql_query)
+    result = cursor.fetchall()
+    print(result)
     return result
 

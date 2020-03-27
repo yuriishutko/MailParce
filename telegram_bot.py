@@ -12,7 +12,7 @@ import requests
 
 
 keyboard = [['\ud83d\udd51', '/update_database', '\ud83d\udc31'],
-            ['/time', '/exchange', '/start'],
+            ['/new_users', '/exchange', '/start'],
             ['/new_employees']]
 
 RKM = ReplyKeyboardMarkup(
@@ -24,9 +24,7 @@ RKM = ReplyKeyboardMarkup(
 
 def do_start(update: Update,
              context: CallbackContext):  # update - экземпляр класса Updater (так будут доступны подсказки)
-    """
-    Обработчик событий (команды) от телеграма
-    """
+    """Обработчик событий (команды) от телеграма"""
     first_name = update.message.chat.first_name
     context.bot.send_message(chat_id=update.message.chat_id, text='Привет, {} :)'.format(first_name))
 
@@ -36,9 +34,7 @@ def do_stop(update: Update, context: CallbackContext):
 
 
 def do_echo(update: Update, context: CallbackContext):
-    """
-    Функция, которая обрабатывает все входящие сообщения
-    """
+    """Функция, которая обрабатывает все входящие сообщения """
     text = update.message.text  # Получаем текст того, что нам написали
     context.bot.send_message(chat_id=update.message.chat_id, text=text, reply_markup=RKM)
 
@@ -59,22 +55,20 @@ def update_database(update: Update, context: CallbackContext):
 
 
 def get_new_message(update: Update, context: CallbackContext):
-    arr = mail_parce.get_array_of_data()
-    if arr:
-        for el in arr:
-            print(el)
-
+    """Function gets data from a database and returns it to text field of telegram bot"""
     data = mysql_database.get_data_from_table()
-
     for el in data:
         date = datetime.strftime(el[0], '%d-%m-%Y')
         context.bot.send_message(chat_id=update.message.chat_id, text=date + '\n' + '\n'.join(el[1:]))
 
 
-def get_current_time(update: Update, context: CallbackContext):
+def get_new_users(update: Update, context: CallbackContext):
     time_now = datetime.now()
-    str_time = time_now.strftime('Current date and time:\n%Y-%m-%d \n%H:%M:%S')
-    context.bot.send_message(chat_id=update.message.chat_id, text=str_time)
+    str_time = time_now.strftime('%Y.%m.%d')
+    new_employees = mysql_database.get_date_of_new_employees(str_time)
+    for el in new_employees:
+        date = datetime.strftime(el[0], '%d-%m-%Y')
+        context.bot.send_message(chat_id=update.message.chat_id, text=date + '\n' + '\n'.join(el[1:]))
 
 
 def get_human_ccy_mask(ccy):
@@ -94,9 +88,7 @@ def unknown(update: Update, context: CallbackContext):
 
 
 def main():
-    """
-    Основная функция
-    """
+    """Основная функция"""
     updater = Updater(token=TELEGRAM_TOKEN, use_context=True)  # Создаем updater как экземпляр класса Updater
 
     # Добавляем обработчик команд
@@ -105,7 +97,7 @@ def main():
     get_new_message_handler = CommandHandler('new_employees', get_new_message)
     update_database_handler = CommandHandler('update_database', update_database)
     exchange_handler = CommandHandler('exchange', print_exchange)
-    time_handler = CommandHandler('time', get_current_time)
+    get_new_users_handler = CommandHandler('new_users', get_new_users)
     unknown_handler = MessageHandler(Filters.command, unknown)
     message_handler = MessageHandler(Filters.text, do_echo)
 
@@ -118,7 +110,7 @@ def main():
     updater.dispatcher.add_handler(get_new_message_handler)
     updater.dispatcher.add_handler(update_database_handler)
     updater.dispatcher.add_handler(exchange_handler)
-    updater.dispatcher.add_handler(time_handler)
+    updater.dispatcher.add_handler(get_new_users_handler)
     updater.dispatcher.add_handler(unknown_handler)
 
     # Запускаем скачивание обновлений из телеграма
