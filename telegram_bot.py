@@ -3,18 +3,23 @@ from telegram.ext import Updater, CallbackQueryHandler, CallbackContext
 from telegram.ext import CommandHandler, MessageHandler, Filters
 from config.config import TELEGRAM_TOKEN, API_PRIVAT
 from datetime import datetime
-import mail_parce
 import mysql_database
 import requests
-
-
+from apscheduler.schedulers.background import BackgroundScheduler
 import logging
+
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 """Uncomment 2 rows below this comment if you need to debug this code and to comment above 4 ones"""
 # logging.basicConfig(level=logging.DEBUG,
 #                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+"""Background scheduler will update the database every n minutes"""
+scheduler = BackgroundScheduler()
+scheduler.add_job(mysql_database.update_database, 'interval', minutes=10)
+scheduler.start()
 
 
 def button(update: Update, context: CallbackContext):
@@ -37,8 +42,7 @@ def start(update: Update, context: CallbackContext):
 def get_menu(update, context: CallbackContext):
     """After 'New employees preparation' appears in a text field of
     Telegram the function returns inline keyboard with main menu"""
-    keyboard = [[InlineKeyboardButton("Update database", callback_data='/update_database'),
-                 InlineKeyboardButton("New employees", callback_data='/new_employees')],
+    keyboard = [[InlineKeyboardButton("New employees", callback_data='/new_employees')],
                 [InlineKeyboardButton("All the data \ud83d\udd51", callback_data='/all_the_data')]]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -51,21 +55,6 @@ def get_other_func_menu(update, context: CallbackContext):
     keyboard = [[InlineKeyboardButton("Exchange", callback_data='/exchange')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text('Please choose:', reply_markup=reply_markup)
-
-
-def update_database(update: Update, context: CallbackContext):
-    """This function gets unseen messages from the mailbox and make changes in the database"""
-    count = 0
-    arr = mail_parce.get_array_of_data()
-    if arr:
-        for el in arr:
-            count += 1
-            print(el, count)
-            mysql_database.insert_new_data_to_table(el['date'], el['name'], el['department'], el['role'], el['manager'])
-            context.bot.send_message(chat_id=update.message.chat_id,
-                                     text='Added ' + str(count) + ' ' + 'new positions')
-    else:
-        context.bot.send_message(chat_id=update.message.chat_id, text='There are no new messages')
 
 
 def get_all_the_data(update: Update, context: CallbackContext):
@@ -120,7 +109,6 @@ def main():
     menu_handler = MessageHandler(Filters.text(['New employees preparation']), get_menu)
     other_functions_menu_handler = MessageHandler(Filters.text(['Other functions']), get_other_func_menu)
     all_the_data_handler = CommandHandler('all_the_data', get_all_the_data)
-    update_database_handler = CommandHandler('update_database', update_database)
     exchange_handler = CommandHandler('exchange', print_exchange)
     new_users_handler = CommandHandler('new_employees', get_new_users)
     unknown_handler = MessageHandler(Filters.command, unknown)
@@ -132,7 +120,6 @@ def main():
     updater.dispatcher.add_handler(menu_handler)
     updater.dispatcher.add_handler(other_functions_menu_handler)
     updater.dispatcher.add_handler(all_the_data_handler)
-    updater.dispatcher.add_handler(update_database_handler)
     updater.dispatcher.add_handler(exchange_handler)
     updater.dispatcher.add_handler(new_users_handler)
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
@@ -150,3 +137,4 @@ def main():
 # Write a code to make our bot to run only from this module
 if __name__ == '__main__':
     main()
+
