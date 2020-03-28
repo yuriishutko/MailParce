@@ -7,8 +7,12 @@ import mail_parce
 import mysql_database
 import requests
 
-"""Uncomment 3 rows below this comment if you need to debug this code"""
-# import logging
+
+import logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
+"""Uncomment 2 rows below this comment if you need to debug this code and to comment above 4 ones"""
 # logging.basicConfig(level=logging.DEBUG,
 #                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -16,6 +20,7 @@ import requests
 def button(update: Update, context: CallbackContext):
     """Function returns the data of specific inline keyboard button"""
     query = update.callback_query
+    query.answer()
     query.edit_message_text(text="Selected option: {}".format(query.data))
 
 
@@ -97,6 +102,11 @@ def print_exchange(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.message.chat_id, text=human_ccy)
 
 
+def error(update, context):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
+
+
 def unknown(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.message.chat_id, text='I don\'t know such a command!)')
 
@@ -127,13 +137,13 @@ def main():
     updater.dispatcher.add_handler(new_users_handler)
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
     updater.dispatcher.add_handler(unknown_handler)
+    updater.dispatcher.add_error_handler(error)
 
     # Start downloading updates from Telegram
     updater.start_polling()
-    """Указываем Updater, чтоб он не закрывался 
-    до тех пор пока не обработаются все updates 
-    и чтобы код работал до тех пор пока мы сами 
-    не захотим его отключить"""
+
+    # Run the bot until the user presses Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT
     updater.idle()
 
 
