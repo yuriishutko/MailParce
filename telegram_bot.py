@@ -7,6 +7,11 @@ import mail_parce
 import mysql_database
 import requests
 
+"""Uncomment 3 rows below this comment if you need to debug this code"""
+# import logging
+# logging.basicConfig(level=logging.DEBUG,
+#                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 
 def button(update: Update, context: CallbackContext):
     """Function returns the data of specific inline keyboard button"""
