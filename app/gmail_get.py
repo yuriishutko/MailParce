@@ -24,7 +24,7 @@ def get_body_of_the_message(message):
 def search_by_keys(key, value, connection):
     """Function provides to find some messages by parameters and keys
     For example
-    search('FROM', 'user@examole.com', connection)
+    search('FROM', 'user@example.com', connection)
     Where con is an object of connection to the mailbox"""
     result, data = connection.search(None, key, '"{}"'.format(value))
     return data

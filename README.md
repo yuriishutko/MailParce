@@ -10,11 +10,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-You need docker and docker-compose installed on your PC
+You need [docker](https://docs.docker.com/engine/install/ubuntu/) and [docker-compose](https://docs.docker.com/compose/install/) to be installed on your PC
 
-```
-Give examples
-```
 
 ### Installing
 
