@@ -21,6 +21,8 @@ First of all we need to clone this repository locally:
 ```
 git clone https://github.com/YuriiShutko/MailParce.git
 ```
+Create .env file near docker-compose.yml using sample file named example.env.
+
 Then we use only one command to make our bot running:
 ```
 docker-compose up -d --build
