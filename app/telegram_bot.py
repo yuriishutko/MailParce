@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 """Background scheduler will update the database every n minutes"""
 scheduler = BackgroundScheduler()
-scheduler.add_job(mysql_database.update_database, 'interval', minutes=1)
+scheduler.add_job(mysql_database.update_database, 'interval', minutes=10)
 scheduler.start()
 
 
