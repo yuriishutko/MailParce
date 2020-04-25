@@ -19,7 +19,7 @@ Give examples
 ### Installing
 
 Using docker containers
-In this case we use [docker-compose.yml](https://github.com/YuriiShutko/MailParce/blob/master/docker-compose.yaml) file that will help us to combine our main container with telegram bot that will be built from /app/Dockerfile and mysql database from dockerhub (in my case this is mysql:8.0.1).
+In this case we use [docker-compose.yml](https://github.com/YuriiShutko/MailParce/blob/master/docker-compose.yml) file that will help us to combine our main container with telegram bot that will be built from /app/Dockerfile and mysql database from dockerhub (in my case this is mysql:8.0.1).
 First of all we need to clone this repository locally:
 ```
 git clone https://github.com/YuriiShutko/MailParce.git
