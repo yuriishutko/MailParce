@@ -1,0 +1,1 @@
+CREATE TABLE new_employees ( date DATE NOT NULL , name TEXT CHARACTER SET koi8r COLLATE koi8r_general_ci NOT NULL , department TEXT CHARACTER SET koi8r COLLATE koi8r_general_ci NOT NULL , role TEXT CHARACTER SET koi8r COLLATE koi8r_general_ci NOT NULL , manager TEXT CHARACTER SET koi8r COLLATE koi8r_general_ci NOT NULL ) ENGINE = InnoDB;
